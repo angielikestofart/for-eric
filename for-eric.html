@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>a quest for eric ♡</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #D4537E;
+    --pink-light: #FBEAF0;
+    --pink-soft: #F4C0D1;
+    --bg: #0e0e10;
+    --surface: #18181c;
+    --surface2: #222228;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0ede8;
+    --text-muted: #888580;
+    --text-dim: #555250;
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Lora', serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  /* starfield */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 15%, rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 55%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 85%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 45%, rgba(255,255,255,0.15) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 35% 35%, rgba(212,83,126,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 75% 65%, rgba(212,83,126,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .game-wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 620px;
+  }
+
+  .game-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .game-header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--pink);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .game-header h1 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,83,126,0.4), transparent);
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    transition: background 0.4s, border-color 0.4s;
+  }
+
+  .dot.done {
+    background: var(--pink);
+    border-color: var(--pink);
+    box-shadow: 0 0 6px rgba(212,83,126,0.5);
+  }
+
+  .prog-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .scene-title {
+    font-size: 11px;
+    color: var(--pink);
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+    opacity: 0.85;
+  }
+
+  .story {
+    font-size: 14px;
+    line-height: 1.95;
+    color: #c8c4be;
+    margin-bottom: 1.5rem;
+  }
+
+  .hl { color: var(--pink); font-weight: 500; }
+
+  .cd {
+    background: var(--surface2);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 12px;
+    color: #a8c4a0;
+    font-family: var(--mono);
+  }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 0.5rem;
+  }
+
+  .choice-btn {
+    text-align: left;
+    background: var(--surface2);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: #a0a8b0;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .choice-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(212,83,126,0.06), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .choice-btn:hover {
+    border-color: rgba(212,83,126,0.3);
+    color: var(--text);
+  }
+
+  .choice-btn:hover::before { opacity: 1; }
+  .choice-btn:active { transform: scale(0.99); }
+
+  /* ending */
+  .ending {
+    text-align: center;
+    padding: 0.5rem 0 1rem;
+  }
+
+  .ending .commit-log {
+    text-align: left;
+    background: var(--surface2);
+    border: 0.5px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 12.5px;
+    line-height: 2;
+  }
+
+  .ending .commit-log .sha { color: var(--pink); }
+  .ending .commit-log .msg { color: #909090; }
+
+  .ending .letter {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    line-height: 2;
+    color: #c8c4be;
+    margin-bottom: 1.5rem;
+  }
+
+  .ending .letter .from {
+    display: block;
+    margin-top: 1rem;
+    font-size: 14px;
+    color: var(--pink);
+    font-style: normal;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+  }
+
+  .hearts {
+    font-size: 22px;
+    margin-bottom: 1rem;
+    letter-spacing: 6px;
+    animation: pulse 2s ease infinite;
+  }
+
+  .restart-btn {
+    background: transparent;
+    border: 0.5px solid rgba(212,83,126,0.4);
+    color: var(--pink);
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .restart-btn:hover {
+    background: rgba(212,83,126,0.08);
+    border-color: var(--pink);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .scene-anim {
+    animation: fadeUp 0.35s ease both;
+  }
+</style>
+</head>
+<body>
+
+<div class="game-wrap">
+  <div class="game-header">
+    <div class="eyebrow">a game for</div>
+    <h1>eric ♡</h1>
+  </div>
+
+  <div class="card">
+    <div class="progress-row" id="progress"></div>
+    <div id="screen"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+</div>
+
+<script>
+const TOTAL = 5;
+
+const scenes = {
+  0: {
+    title: "// chapter_1.js — the_quest_begins",
+    step: 0,
+    text: `The terminal blinks.<br><br><span class="cd">$ angie.initialize()</span><br><br>You are <span class="hl">Angie</span>, a brave adventurer in the Land of Code. Somewhere out there is <span class="hl">Eric</span> — your person. He's been lost deep inside <span class="cd">maze_of_life.exe</span>, tangled in deadlines, responsibilities, and a thousand open tabs.<br><br>Your mission: find him. Not to fix anything. Just to remind him he is loved.`,
+    choices: [
+      { text: '> angie.start_quest()', next: 1 },
+      { text: '> check_inventory()', next: 'inv' },
+    ]
+  },
+  inv: {
+    title: "// inventory.json",
+    step: 0,
+    text: `<span class="cd">$ cat inventory.json</span><br><br>{<br>&nbsp;&nbsp;"courage": true,<br>&nbsp;&nbsp;"love": "infinite",<br>&nbsp;&nbsp;"memories": ["a summer meeting", "sept 16, 2025 ♡"],<br>&nbsp;&nbsp;"patience": 9999,<br>&nbsp;&nbsp;"snacks": true<br>}<br><br>You have everything you need.`,
+    choices: [
+      { text: '> angie.start_quest()', next: 1 },
+    ]
+  },
+  1: {
+    title: "// chapter_2.js — the_summer_origin",
+    step: 1,
+    text: `The first clue glows on screen:<br><br><span class="cd">$ git log --first-commit</span><br><br><span class="hl">commit: summer</span> — two people meet. No fanfare, no scheduled event. Just the right moment, the right person.<br><br>You remember it. That's where the story started — before the September 16th commit that made it official. Before the <span class="cd">relationship.push()</span> that changed everything.<br><br>A path forks ahead. The forest of feelings is dense.`,
+    choices: [
+      { text: '> take_path("through the debugging forest")', next: 2 },
+      { text: '> take_path("across the deadline mountains")', next: '2b' },
+    ]
+  },
+  '2b': {
+    title: "// detour.js — deadline_mountains",
+    step: 2,
+    text: `You climb the jagged <span class="hl">Deadline Mountains</span>. The air is thin. Somewhere up here, Eric scales these every day — school, expectations, the weight of it all.<br><br>You leave a note tucked in a rock crevice:<br><br><span class="cd">"I see how hard you work. I'm proud of you."</span><br><br>The mountain feels a little smaller now. You descend back toward the main path.`,
+    choices: [
+      { text: '> continue_quest()', next: 2 },
+    ]
+  },
+  2: {
+    title: "// chapter_3.js — the_debugging_forest",
+    step: 2,
+    text: `You enter the <span class="hl">Debugging Forest</span>. Errors hang from the trees like fog.<br><br><span class="cd">ERROR: too_much_on_my_plate.js — line 1</span><br><span class="cd">ERROR: not_enough_time.js — line 1</span><br><span class="cd">ERROR: i_dont_want_to_hurt_her.js — line 1</span><br><br>You read the last one twice. Your chest tightens. You understand now — the distance isn't coldness. It's care, tangled up in exhaustion.<br><br>You open your editor. You write one function:`,
+    choices: [
+      { text: '> write: function love(person) { return love; }', next: 3 },
+      { text: '> write: function stay() { return "I\'m not going anywhere"; }', next: 3 },
+    ]
+  },
+  3: {
+    title: "// chapter_4.js — found",
+    step: 3,
+    text: `The forest clears. A soft light ahead.<br><br>You find <span class="hl">Eric</span> at his desk, headphones on, three energy drinks deep, ten browser tabs open. He looks tired. He looks like a person carrying a lot.<br><br>He looks up and sees you.<br><br><span class="cd">$ eric.lookup()</span><br><span class="cd">// output: "oh. hi."</span><br><br>You don't say anything clever. You just sit beside him. Sometimes that's the whole function.`,
+    choices: [
+      { text: '> angie.sit_beside_him()', next: 4 },
+    ]
+  },
+  4: {
+    title: "// epilogue",
+    step: 5,
+    text: 'final',
+    choices: []
+  }
+};
+
+function render(id) {
+  const scene = scenes[id];
+  if (!scene) return;
+
+  const prog = document.getElementById('progress');
+  prog.innerHTML = '';
+  const step = scene.step ?? 0;
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < step ? ' done' : '');
+    prog.appendChild(d);
+  }
+  const lbl = document.createElement('span');
+  lbl.className = 'prog-label';
+  lbl.textContent = step >= TOTAL ? 'complete' : `chapter ${step + 1} / ${TOTAL}`;
+  prog.appendChild(lbl);
+
+  const screen = document.getElementById('screen');
+  const choicesEl = document.getElementById('choices');
+  screen.innerHTML = '';
+  choicesEl.innerHTML = '';
+
+  if (id === 4) {
+    // mark all dots done
+    document.querySelectorAll('.dot').forEach(d => d.classList.add('done'));
+    lbl.textContent = 'complete';
+
+    const ending = document.createElement('div');
+    ending.className = 'ending scene-anim';
+    ending.innerHTML = `
+      <div class="hearts">♡ ♡ ♡</div>
+      <div class="commit-log">
+        <div><span class="sha">a3f9c2e</span> <span class="msg">— met in the summer</span></div>
+        <div><span class="sha">b7d1a4f</span> <span class="msg">— sept 16, 2025: it became official ♡</span></div>
+        <div><span class="sha">c2e8b3d</span> <span class="msg">— every day since: still choosing each other</span></div>
+        <div style="margin-top:8px; color:#555; font-size:11px;">relationship.exe — status: running ♡</div>
+      </div>
+      <div class="letter">
+        Hey Eric.<br>
+        Life is a lot right now and that's real.<br>
+        But so is this.<br><br>
+        So is the girl who coded you a whole quest<br>
+        just to say:<br><br>
+        <em>I love you, and I'm not going anywhere.</em><br><br>
+        No pressure. No fixing needed.<br>
+        Just Angie, who really really loves her guy.
+        <span class="from">— angie ♡</span>
+      </div>
+      <button class="restart-btn" onclick="render(0)">$ restart_quest()</button>
+    `;
+    screen.appendChild(ending);
+    return;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'scene-anim';
+  wrap.innerHTML = `<div class="scene-title">${scene.title}</div><div class="story">${scene.text}</div>`;
+  screen.appendChild(wrap);
+
+  scene.choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = c.text;
+    btn.onclick = () => render(c.next);
+    choicesEl.appendChild(btn);
+  });
+}
+
+render(0);
+</script>
+</body>
+</html>
